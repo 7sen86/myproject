@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   العنصر البصري المميز للنظام: حافة "التجليد الحلزوني" التي تُميّز
+   أي دفتر/ملزمة حقيقية. تُستخدم في بطاقات الملازم وصفحة التفاصيل.
+   الحافة على اليمين لأن الدفاتر العربية تُجلّد من اليمين (اتجاه الكتابة).
+   ============================================================ */
+.notebook-edge {
+  position: relative;
+}
+.notebook-edge::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  right: 0;
+  width: 16px;
+  background-image: radial-gradient(circle, theme("colors.paper") 2.5px, transparent 3px);
+  background-size: 16px 18px;
+  background-repeat: repeat-y;
+  background-position: center;
+}
+
+/* خط تسطير بأسلوب قلم الهايلايتر تحت الكلمات المهمة */
+.marker-underline {
+  background-image: linear-gradient(theme("colors.marker.DEFAULT") 45%, transparent 45%);
+  background-repeat: no-repeat;
+  background-size: 100% 0.55em;
+  background-position: 0 78%;
+  padding: 0 0.15em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise-in {
+    animation: rise-in 0.5s ease-out both;
+  }
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
