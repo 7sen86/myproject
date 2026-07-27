@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Bell } from "lucide-react";
-import { markNotificationRead, markAllNotificationsRead } from "../../app/actions";
+import { markNotificationRead, markAllNotificationsRead } from "@/app/admin/actions";
 
 type NotificationItem = {
   id: string;
