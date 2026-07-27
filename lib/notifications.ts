@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "@/lib/db";
 
 export type NotificationItem = {
@@ -7,10 +8,10 @@ export type NotificationItem = {
   createdAt: string;
 };
 
-export async function getAdminNotifications(): Promise<{
+export const getAdminNotifications = cache(async (): Promise<{
   notifications: NotificationItem[];
   unreadCount: number;
-}> {
+}> => {
   const rows = await db.notification.findMany({
     where: { targetRole: "ADMIN" },
     orderBy: { createdAt: "desc" },
@@ -26,4 +27,4 @@ export async function getAdminNotifications(): Promise<{
     })),
     unreadCount: rows.filter((n) => !n.isRead).length,
   };
-}
+});

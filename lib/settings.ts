@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "@/lib/db";
 
 export const DEFAULT_LIBRARY_NAME = "مكتبة الصديقين";
@@ -38,7 +39,7 @@ const SETTING_KEYS = [
  * الرئيسية) في كل طلب، وهذا مقصود ومقبول لأن الجدول صغير جدًا (10 صفوف)
  * واستعلامه رخيص جدًا مقارنة باستعلامات الملازم/الطلبات.
  */
-export async function getLibrarySettings(): Promise<LibrarySettings> {
+export const getLibrarySettings = cache(async (): Promise<LibrarySettings> => {
   const rows = await db.systemSetting.findMany({
     where: { key: { in: [...SETTING_KEYS] } },
   });
@@ -57,4 +58,4 @@ export async function getLibrarySettings(): Promise<LibrarySettings> {
     colorPrimary: map.get("color_primary") || DEFAULT_COLOR_PRIMARY,
     colorAccent: map.get("color_accent") || DEFAULT_COLOR_ACCENT,
   };
-}
+});
