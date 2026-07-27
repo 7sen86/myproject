@@ -14,7 +14,7 @@ function CatalogList({
   title: string;
   items: { id: string; name: string }[];
   createAction: (formData: FormData) => void;
-  deleteAction: (formData: FormData) => void;
+  deleteAction: (formData: FormData) => Promise<{ error?: string } | void>;
   placeholder: string;
 }) {
   return (

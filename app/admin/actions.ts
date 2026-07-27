@@ -106,13 +106,13 @@ export async function toggleTeacherActive(formData: FormData) {
   revalidatePath("/admin/teachers");
 }
 
-export async function deleteTeacher(formData: FormData) {
+export async function deleteTeacher(formData: FormData): Promise<{ error?: string }> {
   await assertAdmin();
   const id = str(formData, "id");
 
   const bookletCount = await db.booklet.count({ where: { teacherId: id } });
   if (bookletCount > 0) {
-    throw new Error("لا يمكن حذف أستاذ لديه ملازم مرتبطة به. عطّل حسابه بدلًا من الحذف.");
+    return { error: "لا يمكن حذف أستاذ لديه ملازم مرتبطة به. عطّل حسابه بدلًا من الحذف." };
   }
 
   const teacher = await db.teacher.findUnique({ where: { id } });
@@ -122,6 +122,7 @@ export async function deleteTeacher(formData: FormData) {
   }
 
   revalidatePath("/admin/teachers");
+  return {};
 }
 
 // ============================================================
@@ -136,15 +137,16 @@ export async function createSubject(formData: FormData) {
   revalidatePath("/admin/catalog");
 }
 
-export async function deleteSubject(formData: FormData) {
+export async function deleteSubject(formData: FormData): Promise<{ error?: string }> {
   await assertAdmin();
   const id = str(formData, "id");
   try {
     await db.subject.delete({ where: { id } });
   } catch {
-    throw new Error("لا يمكن حذف مادة مرتبطة بملازم موجودة");
+    return { error: "لا يمكن حذف مادة مرتبطة بملازم موجودة" };
   }
   revalidatePath("/admin/catalog");
+  return {};
 }
 
 export async function createStage(formData: FormData) {
@@ -155,15 +157,16 @@ export async function createStage(formData: FormData) {
   revalidatePath("/admin/catalog");
 }
 
-export async function deleteStage(formData: FormData) {
+export async function deleteStage(formData: FormData): Promise<{ error?: string }> {
   await assertAdmin();
   const id = str(formData, "id");
   try {
     await db.stage.delete({ where: { id } });
   } catch {
-    throw new Error("لا يمكن حذف مرحلة مرتبطة بملازم موجودة");
+    return { error: "لا يمكن حذف مرحلة مرتبطة بملازم موجودة" };
   }
   revalidatePath("/admin/catalog");
+  return {};
 }
 
 // ============================================================
@@ -217,18 +220,19 @@ export async function updateBooklet(formData: FormData) {
   redirect("/admin/booklets");
 }
 
-export async function deleteBooklet(formData: FormData) {
+export async function deleteBooklet(formData: FormData): Promise<{ error?: string }> {
   await assertAdmin();
   const id = str(formData, "id");
 
   const orderCount = await db.order.count({ where: { bookletId: id } });
   if (orderCount > 0) {
-    throw new Error("لا يمكن حذف ملزمة لها طلبات مسجّلة. أخفِها بدلًا من الحذف.");
+    return { error: "لا يمكن حذف ملزمة لها طلبات مسجّلة. أخفِها بدلًا من الحذف." };
   }
 
   await db.booklet.delete({ where: { id } });
   revalidatePath("/admin/booklets");
   revalidatePath("/");
+  return {};
 }
 
 export async function toggleBookletStatus(formData: FormData) {

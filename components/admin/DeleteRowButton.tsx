@@ -20,7 +20,7 @@ export function DeleteRowButton({
   successMessage = "تم الحذف بنجاح",
   iconOnly = false,
 }: {
-  action: (formData: FormData) => Promise<void> | void;
+  action: (formData: FormData) => Promise<{ error?: string } | void> | void;
   id: string;
   itemLabel: string;
   confirmTitle?: string;
@@ -38,8 +38,12 @@ export function DeleteRowButton({
 
     startTransition(async () => {
       try {
-        await action(formData);
+        const result = await action(formData);
         setOpen(false);
+        if (result && "error" in result && result.error) {
+          showToast("error", result.error);
+          return;
+        }
         showToast("success", successMessage);
         router.refresh();
       } catch (err) {

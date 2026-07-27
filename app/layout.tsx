@@ -5,6 +5,13 @@ import { Providers } from "@/components/Providers";
 import { getLibrarySettings } from "@/lib/settings";
 import { hexToRgbTriplet, lightenHex } from "@/lib/color";
 
+// هذا المشروع بالكامل يعتمد على بيانات حية من القاعدة (الإعدادات، الجلسات،
+// الطلبات...) في كل صفحة تقريبًا عبر التخطيط الجذري (RootLayout يستدعي
+// getLibrarySettings). لذلك نمنع Next.js من محاولة توليد أي صفحة بشكل ثابت
+// وقت البناء (وهو ما كان يفشل سابقًا لعدم توفر DATABASE_URL وقت الـ build) —
+// كل الصفحات تُعرض ديناميكيًا عند الطلب الفعلي بدلًا من ذلك.
+export const dynamic = "force-dynamic";
+
 // El Messiri: خط عرض عربي بشخصية واضحة، يُستخدم للعناوين فقط
 const displayFont = El_Messiri({
   subsets: ["arabic", "latin"],
