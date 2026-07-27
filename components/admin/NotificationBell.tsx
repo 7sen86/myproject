@@ -38,7 +38,7 @@ export function NotificationBell({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 z-20 mt-2 w-80 rounded-2xl border border-ink-50 bg-white shadow-card">
+          <div className="fixed inset-x-3 top-16 z-20 max-h-[70vh] overflow-hidden rounded-2xl border border-ink-50 bg-white shadow-card sm:absolute sm:inset-x-auto sm:left-0 sm:top-auto sm:mt-2 sm:w-80">
             <div className="flex items-center justify-between border-b border-ink-50 px-4 py-3">
               <span className="text-sm font-bold text-charcoal">الإشعارات</span>
               {unreadCount > 0 && (

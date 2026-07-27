@@ -16,6 +16,7 @@ export function BookletCard({ booklet }: { booklet: BookletWithRelations }) {
             <img
               src={booklet.coverImageUrl}
               alt={booklet.title}
+              loading="lazy"
               className="h-full w-full object-cover"
             />
           ) : (

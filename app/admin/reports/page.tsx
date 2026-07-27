@@ -157,43 +157,77 @@ export default async function ReportsPage({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl bg-white shadow-card">
-        <div className="border-b border-ink-50 px-5 py-4">
+      {teacherRows.length === 0 && (
+        <p className="rounded-2xl bg-white px-5 py-10 text-center text-sm text-mist shadow-card">
+          لا توجد مبيعات مؤكدة في هذه الفترة
+        </p>
+      )}
+
+      {/* عرض الجوال: بطاقات */}
+      {teacherRows.length > 0 && (
+        <div className="grid gap-3 md:hidden">
           <h2 className="font-display text-lg font-bold text-charcoal">
             الأداء حسب الأستاذ — {rangeLabels[range]}
           </h2>
+          {teacherRows.map((row) => (
+            <div key={row.name} className="rounded-2xl bg-white p-4 shadow-card">
+              <div className="flex items-center justify-between">
+                <p className="font-display text-base font-bold text-charcoal">{row.name}</p>
+                <span className="text-sm text-mist">{row.soldCopies} نسخة</span>
+              </div>
+              <div className="mt-2 grid grid-cols-3 gap-2 text-center text-sm">
+                <div className="rounded-lg bg-ink-50/60 py-2">
+                  <p className="text-xs text-mist">الإيرادات</p>
+                  <p className="font-medium text-charcoal">{formatPrice(row.revenue)}</p>
+                </div>
+                <div className="rounded-lg bg-leaf/10 py-2">
+                  <p className="text-xs text-mist">حصته</p>
+                  <p className="font-medium text-leaf">{formatPrice(row.teacherShare)}</p>
+                </div>
+                <div className="rounded-lg bg-ink-50 py-2">
+                  <p className="text-xs text-mist">حصة المكتبة</p>
+                  <p className="font-medium text-ink">{formatPrice(row.libraryShare)}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <table className="w-full text-right text-sm">
-          <thead className="bg-ink-50/50 text-mist">
-            <tr>
-              <th className="px-5 py-3 font-medium">الأستاذ</th>
-              <th className="px-5 py-3 font-medium">نسخ مباعة</th>
-              <th className="px-5 py-3 font-medium">إجمالي الإيرادات</th>
-              <th className="px-5 py-3 font-medium">حصته</th>
-              <th className="px-5 py-3 font-medium">حصة المكتبة منه</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-ink-50">
-            {teacherRows.map((row) => (
-              <tr key={row.name}>
-                <td className="px-5 py-3 font-medium text-charcoal">{row.name}</td>
-                <td className="px-5 py-3 text-charcoal">{row.soldCopies}</td>
-                <td className="px-5 py-3 text-charcoal">{formatPrice(row.revenue)} د.ع</td>
-                <td className="px-5 py-3 font-medium text-leaf">
-                  {formatPrice(row.teacherShare)} د.ع
-                </td>
-                <td className="px-5 py-3 text-ink">{formatPrice(row.libraryShare)} د.ع</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      )}
 
-        {teacherRows.length === 0 && (
-          <p className="px-5 py-10 text-center text-sm text-mist">
-            لا توجد مبيعات مؤكدة في هذه الفترة
-          </p>
-        )}
-      </div>
+      {/* عرض الشاشات الكبيرة: جدول */}
+      {teacherRows.length > 0 && (
+        <div className="hidden overflow-hidden rounded-2xl bg-white shadow-card md:block">
+          <div className="border-b border-ink-50 px-5 py-4">
+            <h2 className="font-display text-lg font-bold text-charcoal">
+              الأداء حسب الأستاذ — {rangeLabels[range]}
+            </h2>
+          </div>
+          <table className="w-full text-right text-sm">
+            <thead className="bg-ink-50/50 text-mist">
+              <tr>
+                <th className="px-5 py-3 font-medium">الأستاذ</th>
+                <th className="px-5 py-3 font-medium">نسخ مباعة</th>
+                <th className="px-5 py-3 font-medium">إجمالي الإيرادات</th>
+                <th className="px-5 py-3 font-medium">حصته</th>
+                <th className="px-5 py-3 font-medium">حصة المكتبة منه</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-ink-50">
+              {teacherRows.map((row) => (
+                <tr key={row.name}>
+                  <td className="px-5 py-3 font-medium text-charcoal">{row.name}</td>
+                  <td className="px-5 py-3 text-charcoal">{row.soldCopies}</td>
+                  <td className="px-5 py-3 text-charcoal">{formatPrice(row.revenue)} د.ع</td>
+                  <td className="px-5 py-3 font-medium text-leaf">
+                    {formatPrice(row.teacherShare)} د.ع
+                  </td>
+                  <td className="px-5 py-3 text-ink">{formatPrice(row.libraryShare)} د.ع</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

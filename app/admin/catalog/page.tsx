@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { createSubject, deleteSubject, createStage, deleteStage } from "../actions";
-import { ConfirmForm } from "@/components/admin/ConfirmForm";
+import { DeleteRowButton } from "@/components/admin/DeleteRowButton";
 
 export const dynamic = "force-dynamic";
 
@@ -37,10 +37,12 @@ function CatalogList({
         {items.map((item) => (
           <li key={item.id} className="flex items-center justify-between py-2">
             <span className="text-sm text-charcoal">{item.name}</span>
-            <ConfirmForm action={deleteAction} confirmMessage={`حذف "${item.name}"؟`}>
-              <input type="hidden" name="id" value={item.id} />
-              <button className="text-xs font-medium text-clay hover:underline">حذف</button>
-            </ConfirmForm>
+            <DeleteRowButton
+              action={deleteAction}
+              id={item.id}
+              itemLabel={item.name}
+              successMessage="تم الحذف بنجاح"
+            />
           </li>
         ))}
         {items.length === 0 && <li className="py-3 text-sm text-mist">لا توجد عناصر بعد</li>}

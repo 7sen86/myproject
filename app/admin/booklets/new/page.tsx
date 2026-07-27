@@ -42,7 +42,7 @@ export default async function NewBookletPage() {
             <textarea name="description" rows={3} className={inputClass} />
           </FormField>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="المادة">
               <select name="subjectId" required className={inputClass}>
                 {subjects.map((s) => (
@@ -73,7 +73,7 @@ export default async function NewBookletPage() {
             </select>
           </FormField>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="السعر (د.ع)">
               <input name="price" type="number" min={0} step="0.01" required className={inputClass} />
             </FormField>
