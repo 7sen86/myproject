@@ -52,53 +52,65 @@ export default async function ReportsPage({
     ? (searchParams.range as Range)
     : "month";
 
-  const startDate = getStartDate(range);
+  // بداية الفترة المختارة. لو الفلتر "كل الفترات" نستخدم تاريخ قديم جدًا
+  // بدل قيمة فارغة (null)، عشان يبقى الاستعلام موحّدًا وبسيطًا.
+  const effectiveStart = getStartDate(range) ?? new Date(0);
+  const yearStart = new Date(new Date().getFullYear(), 0, 1);
 
-  const [periodSnapshots, yearSnapshots] = await Promise.all([
-    db.profitSnapshot.findMany({
-      where: startDate ? { order: { createdAt: { gte: startDate } } } : {},
-      include: { order: { include: { teacher: true, booklet: true } } },
-    }),
-    db.profitSnapshot.findMany({
-      where: { order: { createdAt: { gte: new Date(new Date().getFullYear(), 0, 1) } } },
-      include: { order: true },
-    }),
+  // كل الحساب هنا يتم داخل قاعدة البيانات (SUM/GROUP BY) بدل سحب كل الصفوف
+  // للذاكرة وجمعها بالجافاسكربت — هذا يخلي صفحة التقارير سريعة حتى لو
+  // تراكمت عشرات آلاف الطلبات المكتملة عبر السنين.
+  const [totalsRows, teacherRowsRaw, monthlyRows] = await Promise.all([
+    db.$queryRaw<{ sold_copies: bigint; teacher_share: number; library_share: number }[]>`
+      SELECT COUNT(*)::bigint as sold_copies,
+             COALESCE(SUM(ps."teacherShare"), 0)::float as teacher_share,
+             COALESCE(SUM(ps."libraryShare"), 0)::float as library_share
+      FROM profit_snapshots ps
+      JOIN orders o ON o.id = ps."orderId"
+      WHERE o."createdAt" >= ${effectiveStart}
+    `,
+    db.$queryRaw<
+      { teacher_id: string; name: string; sold_copies: bigint; teacher_share: number; library_share: number }[]
+    >`
+      SELECT o."teacherId" as teacher_id, t."fullName" as name,
+             COUNT(*)::bigint as sold_copies,
+             COALESCE(SUM(ps."teacherShare"), 0)::float as teacher_share,
+             COALESCE(SUM(ps."libraryShare"), 0)::float as library_share
+      FROM profit_snapshots ps
+      JOIN orders o ON o.id = ps."orderId"
+      JOIN teachers t ON t.id = o."teacherId"
+      WHERE o."createdAt" >= ${effectiveStart}
+      GROUP BY o."teacherId", t."fullName"
+      ORDER BY (COALESCE(SUM(ps."teacherShare"), 0) + COALESCE(SUM(ps."libraryShare"), 0)) DESC
+    `,
+    db.$queryRaw<{ month: number; total: number }[]>`
+      SELECT EXTRACT(MONTH FROM o."createdAt")::int as month,
+             COALESCE(SUM(ps."teacherShare"), 0)::float as total
+      FROM profit_snapshots ps
+      JOIN orders o ON o.id = ps."orderId"
+      WHERE o."createdAt" >= ${yearStart}
+      GROUP BY month
+      ORDER BY month
+    `,
   ]);
 
-  const totalRevenue = periodSnapshots.reduce(
-    (s, x) => s + Number(x.teacherShare) + Number(x.libraryShare),
-    0
-  );
-  const totalTeacherShare = periodSnapshots.reduce((s, x) => s + Number(x.teacherShare), 0);
-  const totalLibraryShare = periodSnapshots.reduce((s, x) => s + Number(x.libraryShare), 0);
-  const soldCopies = periodSnapshots.length;
+  const totals = totalsRows[0];
+  const soldCopies = Number(totals?.sold_copies ?? 0);
+  const totalTeacherShare = totals?.teacher_share ?? 0;
+  const totalLibraryShare = totals?.library_share ?? 0;
+  const totalRevenue = totalTeacherShare + totalLibraryShare;
 
-  // تجميع حسب الأستاذ للفترة المختارة
-  const byTeacher = new Map<
-    string,
-    { name: string; soldCopies: number; revenue: number; teacherShare: number; libraryShare: number }
-  >();
-  for (const s of periodSnapshots) {
-    const teacherId = s.order.teacherId;
-    const entry = byTeacher.get(teacherId) ?? {
-      name: s.order.teacher.fullName,
-      soldCopies: 0,
-      revenue: 0,
-      teacherShare: 0,
-      libraryShare: 0,
-    };
-    entry.soldCopies += 1;
-    entry.revenue += Number(s.teacherShare) + Number(s.libraryShare);
-    entry.teacherShare += Number(s.teacherShare);
-    entry.libraryShare += Number(s.libraryShare);
-    byTeacher.set(teacherId, entry);
-  }
-  const teacherRows = Array.from(byTeacher.values()).sort((a, b) => b.revenue - a.revenue);
+  const teacherRows = teacherRowsRaw.map((r) => ({
+    name: r.name,
+    soldCopies: Number(r.sold_copies),
+    revenue: r.teacher_share + r.library_share,
+    teacherShare: r.teacher_share,
+    libraryShare: r.library_share,
+  }));
 
-  // رسم بياني بإيرادات السنة الحالية شهريًا (بغض النظر عن الفلتر أعلاه)
   const monthlyTotals = Array(12).fill(0);
-  for (const s of yearSnapshots) {
-    monthlyTotals[s.order.createdAt.getMonth()] += Number(s.teacherShare);
+  for (const row of monthlyRows) {
+    monthlyTotals[row.month - 1] = row.total;
   }
   const monthlyChartData = arabicMonths.map((label, i) => ({
     label: label.slice(0, 3),

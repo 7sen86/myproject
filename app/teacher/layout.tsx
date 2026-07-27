@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { TeacherSidebar } from "./Sidebar";
 import { MobileNavHeader } from "@/components/MobileNavHeader";
+import { getLibrarySettings } from "@/lib/settings";
 
 // ملاحظة: الأيقونات نمررها كاسم نصي (وليس مكوّن React) لأن هذا الملف
 // Server Component ويمرر البيانات لـ MobileNavHeader وهو Client Component.
@@ -25,13 +26,16 @@ export default async function TeacherLayout({ children }: { children: React.Reac
     redirect("/login");
   }
 
+  const settings = await getLibrarySettings();
+
   return (
     <div className="flex min-h-screen flex-col bg-paper lg:flex-row">
-      <TeacherSidebar teacherName={teacher.fullName} />
+      <TeacherSidebar teacherName={teacher.fullName} libraryName={settings.name} logoUrl={settings.logoUrl} />
       <div className="flex-1 overflow-x-hidden">
         <MobileNavHeader
-          brandLabel="مكتبة الصديقين"
+          brandLabel={settings.name}
           subtitle={`أ. ${teacher.fullName}`}
+          logoUrl={settings.logoUrl}
           links={teacherLinks}
           homeHref="/teacher/dashboard"
         />

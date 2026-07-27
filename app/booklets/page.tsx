@@ -4,6 +4,8 @@ import { SearchBar } from "@/components/SearchBar";
 import { BookletFilters } from "@/components/BookletFilters";
 import { BookletCard } from "@/components/BookletCard";
 import { EmptyState } from "@/components/EmptyState";
+import { Pagination } from "@/components/admin/Pagination";
+import { PAGE_SIZE_STUDENT, parsePage, totalPagesOf } from "@/lib/pagination";
 import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +13,10 @@ export const dynamic = "force-dynamic";
 export default async function BookletsPage({
   searchParams,
 }: {
-  searchParams: { q?: string; subject?: string; stage?: string; teacher?: string };
+  searchParams: { q?: string; subject?: string; stage?: string; teacher?: string; page?: string };
 }) {
   const { q, subject, stage, teacher } = searchParams;
+  const page = parsePage(searchParams.page);
 
   const where: Prisma.BookletWhereInput = {
     status: "VISIBLE",
@@ -30,16 +33,23 @@ export default async function BookletsPage({
       : {}),
   };
 
-  const [booklets, subjects, stages, teachers] = await Promise.all([
+  // نجيب فقط الصفحة المطلوبة من الملازم، مو كل الملازم دفعة وحدة —
+  // هذا يخلي الصفحة سريعة حتى لو صار عند المكتبة مئات الملازم مستقبلًا
+  const [totalBooklets, booklets, subjects, stages, teachers] = await Promise.all([
+    db.booklet.count({ where }),
     db.booklet.findMany({
       where,
       include: { subject: true, stage: true, teacher: true },
       orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE_STUDENT,
+      take: PAGE_SIZE_STUDENT,
     }),
     db.subject.findMany({ orderBy: { name: "asc" } }),
     db.stage.findMany({ orderBy: { name: "asc" } }),
     db.teacher.findMany({ where: { isActive: true }, orderBy: { fullName: "asc" } }),
   ]);
+
+  const totalPages = totalPagesOf(totalBooklets, PAGE_SIZE_STUDENT);
 
   return (
     <>
@@ -66,6 +76,13 @@ export default async function BookletsPage({
             ))}
           </div>
         )}
+
+        <Pagination
+          basePath="/booklets"
+          currentPage={page}
+          totalPages={totalPages}
+          searchParams={{ q, subject, stage, teacher }}
+        />
       </main>
     </>
   );

@@ -5,27 +5,23 @@ import { SearchBar } from "@/components/SearchBar";
 import { BookletCard } from "@/components/BookletCard";
 import { EmptyState } from "@/components/EmptyState";
 import { HeroNotebookStack } from "@/components/HeroNotebookStack";
+import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic"; // البيانات تتغير باستمرار (طلبات ومبيعات جديدة)
 
 export default async function HomePage() {
-  const [popular, latest, stages] = await Promise.all([
-    db.booklet.findMany({
-      where: { status: "VISIBLE" },
-      include: { subject: true, stage: true, teacher: true },
-      orderBy: { salesCount: "desc" },
-      take: 4,
-    }),
+  const [latest, stages, subjects] = await Promise.all([
     db.booklet.findMany({
       where: { status: "VISIBLE" },
       include: { subject: true, stage: true, teacher: true },
       orderBy: { createdAt: "desc" },
-      take: 4,
+      take: 8,
     }),
     db.stage.findMany({ orderBy: { name: "asc" } }),
+    db.subject.findMany({ orderBy: { name: "asc" } }),
   ]);
 
-  const isEmpty = popular.length === 0 && latest.length === 0;
+  const isEmpty = latest.length === 0;
 
   return (
     <>
@@ -73,19 +69,18 @@ export default async function HomePage() {
           />
         )}
 
-        {popular.length > 0 && (
+        {subjects.length > 0 && (
           <section>
-            <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="font-display text-2xl font-bold text-charcoal">
-                الأكثر طلبًا
-              </h2>
-              <Link href="/booklets" className="text-sm font-medium text-ink hover:underline">
-                عرض الكل
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {popular.map((b) => (
-                <BookletCard key={b.id} booklet={b} />
+            <h2 className="mb-4 font-display text-2xl font-bold text-charcoal">المواد الدراسية</h2>
+            <div className="flex flex-wrap gap-2">
+              {subjects.map((subject) => (
+                <Link
+                  key={subject.id}
+                  href={`/booklets?subject=${subject.id}`}
+                  className="rounded-full border border-ink/10 bg-white px-4 py-2 text-sm font-medium text-charcoal transition hover:border-ink/30 hover:bg-ink-50"
+                >
+                  {subject.name}
+                </Link>
               ))}
             </div>
           </section>
@@ -94,9 +89,7 @@ export default async function HomePage() {
         {latest.length > 0 && (
           <section>
             <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="font-display text-2xl font-bold text-charcoal">
-                أحدث الملازم
-              </h2>
+              <h2 className="font-display text-2xl font-bold text-charcoal">أحدث الملازم</h2>
               <Link href="/booklets" className="text-sm font-medium text-ink hover:underline">
                 عرض الكل
               </Link>
@@ -106,6 +99,18 @@ export default async function HomePage() {
                 <BookletCard key={b.id} booklet={b} />
               ))}
             </div>
+          </section>
+        )}
+
+        {!isEmpty && (
+          <section className="flex justify-center">
+            <Link
+              href="/booklets"
+              className="flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-ink-light"
+            >
+              تصفح جميع الملازم
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
           </section>
         )}
       </main>

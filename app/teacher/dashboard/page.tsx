@@ -18,42 +18,61 @@ export default async function TeacherDashboardPage() {
   // teacherId يأتي حصريًا من الجلسة الموقّعة، وكل استعلام أدناه مفلتر به
   const teacherId = await requireTeacherId();
 
-  const [bookletsCount, ordersCount, profitSnapshots, lastOrder] = await Promise.all([
-    db.booklet.count({ where: { teacherId } }),
-    db.order.count({ where: { teacherId } }),
-    db.profitSnapshot.findMany({
-      where: { order: { teacherId } },
-      include: { order: true },
-    }),
-    db.order.findFirst({
-      where: { teacherId },
-      orderBy: { createdAt: "desc" },
-      include: { booklet: true },
-    }),
-  ]);
-
-  const totalProfit = profitSnapshots.reduce((sum, s) => sum + Number(s.teacherShare), 0);
-  const soldCopies = profitSnapshots.length; // نسخ مباعة فعليًا = طلبات وصلت لحالة "تم التسليم"
-
   const currentYear = new Date().getFullYear();
+  const yearStart = new Date(currentYear, 0, 1);
+
+  const [bookletsCount, ordersCount, totalsRow, monthlyRows, yearlyRows, lastOrder] =
+    await Promise.all([
+      db.booklet.count({ where: { teacherId } }),
+      db.order.count({ where: { teacherId } }),
+      // إجمالي الأرباح والنسخ المباعة — محسوبة داخل قاعدة البيانات مباشرة
+      db.$queryRaw<{ sold_copies: bigint; total_profit: number }[]>`
+        SELECT COUNT(*)::bigint as sold_copies,
+               COALESCE(SUM(ps."teacherShare"), 0)::float as total_profit
+        FROM profit_snapshots ps
+        JOIN orders o ON o.id = ps."orderId"
+        WHERE o."teacherId" = ${teacherId}
+      `,
+      // أرباح السنة الحالية مقسّمة بالشهر
+      db.$queryRaw<{ month: number; total: number }[]>`
+        SELECT EXTRACT(MONTH FROM o."createdAt")::int as month,
+               COALESCE(SUM(ps."teacherShare"), 0)::float as total
+        FROM profit_snapshots ps
+        JOIN orders o ON o.id = ps."orderId"
+        WHERE o."teacherId" = ${teacherId} AND o."createdAt" >= ${yearStart}
+        GROUP BY month
+        ORDER BY month
+      `,
+      // إجمالي كل سنة على حدة (لقسم "إحصائيات سنوية")
+      db.$queryRaw<{ year: number; total: number }[]>`
+        SELECT EXTRACT(YEAR FROM o."createdAt")::int as year,
+               COALESCE(SUM(ps."teacherShare"), 0)::float as total
+        FROM profit_snapshots ps
+        JOIN orders o ON o.id = ps."orderId"
+        WHERE o."teacherId" = ${teacherId}
+        GROUP BY year
+        ORDER BY year DESC
+      `,
+      db.order.findFirst({
+        where: { teacherId },
+        orderBy: { createdAt: "desc" },
+        include: { booklet: true },
+      }),
+    ]);
+
+  const totalProfit = totalsRow[0]?.total_profit ?? 0;
+  const soldCopies = Number(totalsRow[0]?.sold_copies ?? 0);
+
   const monthlyTotals = Array(12).fill(0);
-  const yearlyTotals: Record<number, number> = {};
-
-  for (const snapshot of profitSnapshots) {
-    const date = snapshot.order.createdAt;
-    const year = date.getFullYear();
-    yearlyTotals[year] = (yearlyTotals[year] ?? 0) + Number(snapshot.teacherShare);
-    if (year === currentYear) {
-      monthlyTotals[date.getMonth()] += Number(snapshot.teacherShare);
-    }
+  for (const row of monthlyRows) {
+    monthlyTotals[row.month - 1] = row.total;
   }
-
   const monthlyChartData = arabicMonths.map((label, i) => ({
     label: label.slice(0, 3),
     value: Math.round(monthlyTotals[i]),
   }));
 
-  const yearlyEntries = Object.entries(yearlyTotals).sort((a, b) => Number(b[0]) - Number(a[0]));
+  const yearlyEntries = yearlyRows.map((r) => [String(r.year), r.total] as [string, number]);
 
   return (
     <div className="space-y-8">

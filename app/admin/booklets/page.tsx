@@ -5,14 +5,29 @@ import { formatPrice } from "@/lib/utils";
 import { toggleBookletStatus, deleteBooklet } from "../actions";
 import { DeleteRowButton } from "@/components/admin/DeleteRowButton";
 import { ToggleRowButton } from "@/components/admin/ToggleRowButton";
+import { Pagination } from "@/components/admin/Pagination";
+import { PAGE_SIZE_ADMIN, parsePage, totalPagesOf } from "@/lib/pagination";
 
 export const dynamic = "force-dynamic";
 
-export default async function BookletsPage() {
-  const booklets = await db.booklet.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { subject: true, stage: true, teacher: true },
-  });
+export default async function BookletsPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
+  const page = parsePage(searchParams.page);
+
+  const [totalBooklets, booklets] = await Promise.all([
+    db.booklet.count(),
+    db.booklet.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { subject: true, stage: true, teacher: true },
+      skip: (page - 1) * PAGE_SIZE_ADMIN,
+      take: PAGE_SIZE_ADMIN,
+    }),
+  ]);
+
+  const totalPages = totalPagesOf(totalBooklets, PAGE_SIZE_ADMIN);
 
   return (
     <div className="space-y-6">
@@ -175,6 +190,13 @@ export default async function BookletsPage() {
           </table>
         </div>
       )}
+
+      <Pagination
+        basePath="/admin/booklets"
+        currentPage={page}
+        totalPages={totalPages}
+        searchParams={{}}
+      />
     </div>
   );
 }

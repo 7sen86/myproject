@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createOrderSchema } from "@/lib/validation";
+import { isRateLimited, getClientIp } from "@/lib/rateLimit";
 
 /**
  * ملاحظة تصميم مهمة:
@@ -10,6 +11,17 @@ import { createOrderSchema } from "@/lib/validation";
  * هذا سيُنفَّذ في مرحلة إدارة الطلبات.
  */
 export async function POST(req: Request) {
+  // حماية أساسية من السبام: هذا endpoint عام وبدون تسجيل دخول،
+  // فأي حد يقدر يستدعيه مباشرة بدون واجهة. نحدد عدد الطلبات المسموحة
+  // من نفس الجهاز خلال فترة قصيرة لتقليل إساءة الاستخدام.
+  const ip = getClientIp(req);
+  if (isRateLimited(`order:${ip}`, 8, 10 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "عدد كبير جدًا من الطلبات خلال وقت قصير، حاول مرة أخرى بعد قليل" },
+      { status: 429 }
+    );
+  }
+
   const body = await req.json().catch(() => null);
   if (!body) {
     return NextResponse.json({ error: "بيانات الطلب غير صالحة" }, { status: 400 });
@@ -28,6 +40,23 @@ export async function POST(req: Request) {
 
   if (!booklet || booklet.status !== "VISIBLE") {
     return NextResponse.json({ error: "هذه الملزمة غير متاحة حاليًا" }, { status: 404 });
+  }
+
+  // منع تكرار نفس الطلب (نفس الرقم لنفس الملزمة) خلال دقيقتين —
+  // يحمي من ضغط الزر أكثر من مرة بالخطأ ومن سبام مباشر على الـ API
+  const recentDuplicate = await db.order.findFirst({
+    where: {
+      bookletId: booklet.id,
+      studentPhone,
+      createdAt: { gte: new Date(Date.now() - 2 * 60 * 1000) },
+    },
+    select: { id: true },
+  });
+  if (recentDuplicate) {
+    return NextResponse.json(
+      { error: "تم إرسال طلب مماثل للتو، انتظر قليلًا قبل إعادة المحاولة" },
+      { status: 429 }
+    );
   }
 
   const order = await db.order.create({

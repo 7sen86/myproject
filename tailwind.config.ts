@@ -11,14 +11,14 @@ const config: Config = {
       colors: {
         // هوية بصرية مستوحاة من الدفتر والملزمة نفسها: حبر داكن + قلم تحديد (هايلايتر)
         ink: {
-          DEFAULT: "#1E2A4A",
-          light: "#33436E",
+          DEFAULT: "rgb(var(--color-ink) / <alpha-value>)",
+          light: "rgb(var(--color-ink-light) / <alpha-value>)",
           50: "#EEF1F8",
         },
         paper: "#F4F5F8",
         marker: {
-          DEFAULT: "#F2A93B",
-          dark: "#D6900F",
+          DEFAULT: "rgb(var(--color-marker) / <alpha-value>)",
+          dark: "rgb(var(--color-marker-dark) / <alpha-value>)",
           50: "#FEF6E7",
         },
         leaf: "#2E9E68",

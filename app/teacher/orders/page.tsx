@@ -1,19 +1,32 @@
 import { db } from "@/lib/db";
 import { requireTeacherId } from "@/lib/teacherSession";
 import { OrderStatusBadge } from "@/components/admin/OrderStatusBadge";
+import { Pagination } from "@/components/admin/Pagination";
+import { PAGE_SIZE_ADMIN, parsePage, totalPagesOf } from "@/lib/pagination";
 import { Phone } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function TeacherOrdersPage() {
+export default async function TeacherOrdersPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const teacherId = await requireTeacherId();
+  const page = parsePage(searchParams.page);
 
-  const orders = await db.order.findMany({
-    where: { teacherId }, // لا يرى الأستاذ إطلاقًا أي طلب خارج هذا الفلتر
-    include: { booklet: true },
-    orderBy: { createdAt: "desc" },
-    take: 200,
-  });
+  const [totalOrders, orders] = await Promise.all([
+    db.order.count({ where: { teacherId } }),
+    db.order.findMany({
+      where: { teacherId }, // لا يرى الأستاذ إطلاقًا أي طلب خارج هذا الفلتر
+      include: { booklet: true },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE_ADMIN,
+      take: PAGE_SIZE_ADMIN,
+    }),
+  ]);
+
+  const totalPages = totalPagesOf(totalOrders, PAGE_SIZE_ADMIN);
 
   return (
     <div className="space-y-6">
@@ -92,6 +105,13 @@ export default async function TeacherOrdersPage() {
           </table>
         </div>
       )}
+
+      <Pagination
+        basePath="/teacher/orders"
+        currentPage={page}
+        totalPages={totalPages}
+        searchParams={{}}
+      />
     </div>
   );
 }

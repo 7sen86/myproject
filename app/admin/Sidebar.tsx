@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, BookOpen, ClipboardList, Tags, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, ClipboardList, Tags, BarChart3, Settings } from "lucide-react";
 import { SignOutButton } from "./SignOutButton";
+import { getLibrarySettings } from "@/lib/settings";
 
 const links = [
   { href: "/admin", label: "لوحة التحكم", icon: LayoutDashboard },
@@ -9,16 +10,33 @@ const links = [
   { href: "/admin/orders", label: "الطلبات", icon: ClipboardList },
   { href: "/admin/reports", label: "التقارير", icon: BarChart3 },
   { href: "/admin/catalog", label: "المواد والمراحل", icon: Tags },
+  { href: "/admin/settings", label: "الإعدادات", icon: Settings },
 ];
 
-export function AdminSidebar() {
+export async function AdminSidebar() {
+  const settings = await getLibrarySettings();
+
   return (
     <aside className="hidden h-screen w-60 shrink-0 flex-col border-l border-ink-50 bg-white lg:flex">
-      <div className="px-5 py-5">
-        <Link href="/admin" className="font-display text-xl font-bold text-ink">
-          مكتبة الصديقين
-        </Link>
-        <p className="mt-0.5 text-xs text-mist">لوحة الإدارة</p>
+      <div className="flex items-center gap-2.5 px-5 py-5">
+        {settings.logoUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={settings.logoUrl}
+            alt=""
+            className="h-9 w-9 shrink-0 rounded-lg object-cover"
+          />
+        ) : (
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ink text-white">
+            <BookOpen className="h-4.5 w-4.5" strokeWidth={1.8} />
+          </span>
+        )}
+        <div className="min-w-0">
+          <Link href="/admin" className="block truncate font-display text-lg font-bold text-ink">
+            {settings.name}
+          </Link>
+          <p className="text-xs text-mist">لوحة الإدارة</p>
+        </div>
       </div>
 
       <nav className="flex-1 space-y-1 px-3">

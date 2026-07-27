@@ -36,7 +36,24 @@ export function StatsAndListSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
-/** هيكل عظمي لصفحة قائمة بسيطة (بدون بطاقات إحصائيات) */
+/** هيكل عظمي لصفحة فورم مقسّمة إلى أقسام (مثل صفحة إعدادات المكتبة) */
+export function FormSkeleton({ sections = 3 }: { sections?: number }) {
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-7 w-48" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      {Array.from({ length: sections }).map((_, i) => (
+        <div key={i} className="space-y-4 rounded-2xl bg-white p-6 shadow-card">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+        </div>
+      ))}
+    </div>
+  );
+}
 export function ListSkeleton({ rows = 6 }: { rows?: number }) {
   return (
     <div className="space-y-6">

@@ -4,6 +4,8 @@ import { OrderStatusSelect } from "@/components/admin/OrderStatusSelect";
 import type { OrderStatus, Prisma } from "@prisma/client";
 import { orderStatusLabels } from "@/components/admin/OrderStatusBadge";
 import { Phone } from "lucide-react";
+import { Pagination } from "@/components/admin/Pagination";
+import { PAGE_SIZE_ADMIN, parsePage, totalPagesOf } from "@/lib/pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -12,18 +14,27 @@ const statusFilters: OrderStatus[] = ["NEW", "PROCESSING", "READY", "DELIVERED",
 export default async function OrdersPage({
   searchParams,
 }: {
-  searchParams: { status?: string };
+  searchParams: { status?: string; page?: string };
 }) {
   const statusFilter = searchParams.status as OrderStatus | undefined;
+  const page = parsePage(searchParams.page);
 
   const where: Prisma.OrderWhereInput = statusFilter ? { status: statusFilter } : {};
 
-  const orders = await db.order.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: { booklet: true, teacher: true },
-    take: 100,
-  });
+  // نجيب العدد الكلي والصفحة المطلوبة فقط، بدل تحميل كل الطلبات دفعة وحدة —
+  // هذا يضمن أن الصفحة تبقى سريعة مهما تراكمت الطلبات مستقبلًا
+  const [totalOrders, orders] = await Promise.all([
+    db.order.count({ where }),
+    db.order.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { booklet: true, teacher: true },
+      skip: (page - 1) * PAGE_SIZE_ADMIN,
+      take: PAGE_SIZE_ADMIN,
+    }),
+  ]);
+
+  const totalPages = totalPagesOf(totalOrders, PAGE_SIZE_ADMIN);
 
   return (
     <div className="space-y-6">
@@ -136,6 +147,13 @@ export default async function OrdersPage({
           </table>
         </div>
       )}
+
+      <Pagination
+        basePath="/admin/orders"
+        currentPage={page}
+        totalPages={totalPages}
+        searchParams={{ status: statusFilter }}
+      />
     </div>
   );
 }
