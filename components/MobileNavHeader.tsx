@@ -2,14 +2,37 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  LayoutDashboard,
+  BookOpen,
+  ClipboardList,
+  Users,
+  Tags,
+  BarChart3,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { SignOutButton } from "@/app/admin/SignOutButton";
+
+/**
+ * الأيقونات لا يمكن تمريرها كـ prop من Server Component إلى هذا المكوّن
+ * (Client Component) لأنها دوال غير قابلة للتسلسل عبر حدود RSC.
+ * لذلك نمررها كاسم نصي فقط ونحوّلها هنا إلى مكوّن فعلي عبر هذه الخريطة.
+ */
+const iconMap: Record<string, LucideIcon> = {
+  dashboard: LayoutDashboard,
+  booklets: BookOpen,
+  orders: ClipboardList,
+  teachers: Users,
+  catalog: Tags,
+  reports: BarChart3,
+};
 
 type NavLink = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: keyof typeof iconMap;
 };
 
 /**
@@ -54,7 +77,7 @@ export function MobileNavHeader({
       {open && (
         <nav className="space-y-1 border-t border-ink-50 px-3 py-3">
           {links.map((link) => {
-            const Icon = link.icon;
+            const Icon = iconMap[link.icon];
             return (
               <Link
                 key={link.href}

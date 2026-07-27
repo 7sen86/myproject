@@ -1,15 +1,16 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { LayoutDashboard, BookOpen, ClipboardList } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { TeacherSidebar } from "./Sidebar";
 import { MobileNavHeader } from "@/components/MobileNavHeader";
 
+// ملاحظة: الأيقونات نمررها كاسم نصي (وليس مكوّن React) لأن هذا الملف
+// Server Component ويمرر البيانات لـ MobileNavHeader وهو Client Component.
 const teacherLinks = [
-  { href: "/teacher/dashboard", label: "لوحتي", icon: LayoutDashboard },
-  { href: "/teacher/booklets", label: "ملازمي", icon: BookOpen },
-  { href: "/teacher/orders", label: "طلباتي", icon: ClipboardList },
+  { href: "/teacher/dashboard", label: "لوحتي", icon: "dashboard" as const },
+  { href: "/teacher/booklets", label: "ملازمي", icon: "booklets" as const },
+  { href: "/teacher/orders", label: "طلباتي", icon: "orders" as const },
 ];
 
 export default async function TeacherLayout({ children }: { children: React.ReactNode }) {

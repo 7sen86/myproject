@@ -1,18 +1,19 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { LayoutDashboard, Users, BookOpen, ClipboardList, Tags, BarChart3 } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { AdminSidebar } from "./Sidebar";
 import { AdminHeader } from "./AdminHeader";
 import { MobileNavHeader } from "@/components/MobileNavHeader";
 
+// ملاحظة: الأيقونات نمررها كاسم نصي (وليس مكوّن React) لأن هذا الملف
+// Server Component ويمرر البيانات لـ MobileNavHeader وهو Client Component.
 const adminLinks = [
-  { href: "/admin", label: "لوحة التحكم", icon: LayoutDashboard },
-  { href: "/admin/teachers", label: "الأساتذة", icon: Users },
-  { href: "/admin/booklets", label: "الملازم", icon: BookOpen },
-  { href: "/admin/orders", label: "الطلبات", icon: ClipboardList },
-  { href: "/admin/reports", label: "التقارير", icon: BarChart3 },
-  { href: "/admin/catalog", label: "المواد والمراحل", icon: Tags },
+  { href: "/admin", label: "لوحة التحكم", icon: "dashboard" as const },
+  { href: "/admin/teachers", label: "الأساتذة", icon: "teachers" as const },
+  { href: "/admin/booklets", label: "الملازم", icon: "booklets" as const },
+  { href: "/admin/orders", label: "الطلبات", icon: "orders" as const },
+  { href: "/admin/reports", label: "التقارير", icon: "reports" as const },
+  { href: "/admin/catalog", label: "المواد والمراحل", icon: "catalog" as const },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
