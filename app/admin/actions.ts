@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
 import { calculateProfitSplit, resolveProfitPercentage } from "@/lib/profit";
 import { isValidHexColor } from "@/lib/color";
+import { DEFAULT_LIBRARY_NAME } from "@/lib/settings";
 import type { BookletStatus, OrderStatus } from "@prisma/client";
 
 /**
@@ -272,7 +273,7 @@ export async function markAllNotificationsRead() {
 export async function updateLibrarySettings(formData: FormData) {
   await assertAdmin();
 
-  const name = str(formData, "name") || "مكتبة الصديقين";
+  const name = str(formData, "name") || DEFAULT_LIBRARY_NAME;
   const logoUrl = str(formData, "logoUrl"); // فاضي = إزالة الشعار والرجوع للافتراضي
   const phone = str(formData, "phone");
   const email = str(formData, "email");

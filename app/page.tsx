@@ -17,8 +17,14 @@ export default async function HomePage() {
       orderBy: { createdAt: "desc" },
       take: 8,
     }),
-    db.stage.findMany({ orderBy: { name: "asc" } }),
-    db.subject.findMany({ orderBy: { name: "asc" } }),
+    db.stage.findMany({
+      where: { booklets: { some: { status: "VISIBLE" } } },
+      orderBy: { name: "asc" },
+    }),
+    db.subject.findMany({
+      where: { booklets: { some: { status: "VISIBLE" } } },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   const isEmpty = latest.length === 0;

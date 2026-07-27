@@ -44,9 +44,18 @@ export default async function BookletsPage({
       skip: (page - 1) * PAGE_SIZE_STUDENT,
       take: PAGE_SIZE_STUDENT,
     }),
-    db.subject.findMany({ orderBy: { name: "asc" } }),
-    db.stage.findMany({ orderBy: { name: "asc" } }),
-    db.teacher.findMany({ where: { isActive: true }, orderBy: { fullName: "asc" } }),
+    db.subject.findMany({
+      where: { booklets: { some: { status: "VISIBLE" } } },
+      orderBy: { name: "asc" },
+    }),
+    db.stage.findMany({
+      where: { booklets: { some: { status: "VISIBLE" } } },
+      orderBy: { name: "asc" },
+    }),
+    db.teacher.findMany({
+      where: { isActive: true, booklets: { some: { status: "VISIBLE" } } },
+      orderBy: { fullName: "asc" },
+    }),
   ]);
 
   const totalPages = totalPagesOf(totalBooklets, PAGE_SIZE_STUDENT);
