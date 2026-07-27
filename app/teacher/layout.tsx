@@ -1,8 +1,16 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { LayoutDashboard, BookOpen, ClipboardList } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { TeacherSidebar } from "./Sidebar";
+import { MobileNavHeader } from "@/components/MobileNavHeader";
+
+const teacherLinks = [
+  { href: "/teacher/dashboard", label: "لوحتي", icon: LayoutDashboard },
+  { href: "/teacher/booklets", label: "ملازمي", icon: BookOpen },
+  { href: "/teacher/orders", label: "طلباتي", icon: ClipboardList },
+];
 
 export default async function TeacherLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -17,9 +25,17 @@ export default async function TeacherLayout({ children }: { children: React.Reac
   }
 
   return (
-    <div className="flex min-h-screen bg-paper">
+    <div className="flex min-h-screen flex-col bg-paper lg:flex-row">
       <TeacherSidebar teacherName={teacher.fullName} />
-      <div className="flex-1 overflow-x-hidden px-6 py-8 sm:px-10">{children}</div>
+      <div className="flex-1 overflow-x-hidden">
+        <MobileNavHeader
+          brandLabel="مكتبة الصديقين"
+          subtitle={`أ. ${teacher.fullName}`}
+          links={teacherLinks}
+          homeHref="/teacher/dashboard"
+        />
+        <div className="px-4 py-6 sm:px-10 sm:py-8">{children}</div>
+      </div>
     </div>
   );
 }

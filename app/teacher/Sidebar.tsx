@@ -10,10 +10,10 @@ const links = [
 
 export function TeacherSidebar({ teacherName }: { teacherName: string }) {
   return (
-    <aside className="flex h-screen w-60 shrink-0 flex-col border-l border-ink-50 bg-white">
+    <aside className="hidden h-screen w-60 shrink-0 flex-col border-l border-ink-50 bg-white lg:flex">
       <div className="px-5 py-5">
         <Link href="/teacher/dashboard" className="font-display text-xl font-bold text-ink">
-          ملازم<span className="marker-underline">.</span>
+          مكتبة الصديقين
         </Link>
         <p className="mt-0.5 truncate text-xs text-mist">أ. {teacherName}</p>
       </div>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { updateBooklet } from "../../actions";
 import { FormField, inputClass } from "@/components/admin/FormField";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 export default async function EditBookletPage({ params }: { params: { id: string } }) {
   const [booklet, subjects, stages, teachers] = await Promise.all([
@@ -78,7 +79,7 @@ export default async function EditBookletPage({ params }: { params: { id: string
         </FormField>
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField label="السعر (ج.م)">
+          <FormField label="السعر (د.ع)">
             <input
               name="price"
               type="number"
@@ -106,14 +107,8 @@ export default async function EditBookletPage({ params }: { params: { id: string
           </FormField>
         </div>
 
-        <FormField label="رابط صورة الغلاف (اختياري)">
-          <input
-            name="coverImageUrl"
-            type="url"
-            dir="ltr"
-            defaultValue={booklet.coverImageUrl ?? ""}
-            className={inputClass}
-          />
+        <FormField label="صورة الغلاف (اختياري)">
+          <ImageUploadField name="coverImageUrl" defaultValue={booklet.coverImageUrl} />
         </FormField>
 
         <FormField label="حالة العرض">

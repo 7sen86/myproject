@@ -12,5 +12,5 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function formatPrice(price: number | string | { toString(): string }) {
   const num = Number(price.toString());
-  return new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 0 }).format(num);
+  return new Intl.NumberFormat("ar-IQ", { maximumFractionDigits: 0 }).format(num);
 }

@@ -5,7 +5,7 @@ export function Header() {
     <header className="sticky top-0 z-20 border-b border-ink-50 bg-paper/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <Link href="/" className="font-display text-2xl font-bold text-ink">
-          ملازم<span className="marker-underline">.</span>
+          مكتبة الصديقين
         </Link>
 
         <nav className="flex items-center gap-2 sm:gap-4">

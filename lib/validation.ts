@@ -6,7 +6,7 @@ export const createOrderSchema = z.object({
   studentPhone: z
     .string()
     .trim()
-    .regex(/^01[0-2,5]{1}[0-9]{8}$/, "رقم الهاتف غير صحيح"),
+    .regex(/^07[0-9]{9}$/, "رقم الهاتف غير صحيح"),
   governorateId: z.string().optional().nullable(),
   addressDetails: z.string().trim().max(300).optional().nullable(),
   notes: z.string().trim().max(500).optional().nullable(),

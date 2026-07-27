@@ -68,7 +68,7 @@ export default async function TeacherDashboardPage() {
         <StatCard label="نسخ مباعة" value={soldCopies} icon={TrendingUp} accent="marker" />
         <StatCard
           label="أرباحي الحالية"
-          value={`${formatPrice(totalProfit)} ج.م`}
+          value={`${formatPrice(totalProfit)} د.ع`}
           icon={Wallet}
           accent="leaf"
         />
@@ -93,7 +93,7 @@ export default async function TeacherDashboardPage() {
             {yearlyEntries.map(([year, total]) => (
               <li key={year} className="flex items-center justify-between text-sm">
                 <span className="text-charcoal">{year}</span>
-                <span className="font-medium text-ink">{formatPrice(total)} ج.م</span>
+                <span className="font-medium text-ink">{formatPrice(total)} د.ع</span>
               </li>
             ))}
           </ul>
@@ -114,7 +114,7 @@ export default async function TeacherDashboardPage() {
               <p className="text-sm font-medium text-charcoal">{lastOrder.booklet.title}</p>
               <p className="text-xs text-mist">
                 {lastOrder.studentName} ·{" "}
-                {new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(
+                {new Intl.DateTimeFormat("ar-IQ", { dateStyle: "medium" }).format(
                   lastOrder.createdAt
                 )}
               </p>

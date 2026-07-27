@@ -13,10 +13,10 @@ const links = [
 
 export function AdminSidebar() {
   return (
-    <aside className="flex h-screen w-60 shrink-0 flex-col border-l border-ink-50 bg-white">
+    <aside className="hidden h-screen w-60 shrink-0 flex-col border-l border-ink-50 bg-white lg:flex">
       <div className="px-5 py-5">
         <Link href="/admin" className="font-display text-xl font-bold text-ink">
-          ملازم<span className="marker-underline">.</span>
+          مكتبة الصديقين
         </Link>
         <p className="mt-0.5 text-xs text-mist">لوحة الإدارة</p>
       </div>

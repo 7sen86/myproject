@@ -36,7 +36,7 @@ export default async function AdminDashboardPage() {
         <StatCard label="طلبات جديدة" value={newOrdersCount} icon={ClipboardList} accent="marker" />
         <StatCard
           label="إيرادات مكتملة"
-          value={`${formatPrice(totalRevenue)} ج.م`}
+          value={`${formatPrice(totalRevenue)} د.ع`}
           icon={Wallet}
           accent="leaf"
         />

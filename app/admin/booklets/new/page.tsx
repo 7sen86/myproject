@@ -2,6 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { createBooklet } from "../../actions";
 import { FormField, inputClass } from "@/components/admin/FormField";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 export default async function NewBookletPage() {
   const [subjects, stages, teachers] = await Promise.all([
@@ -73,7 +74,7 @@ export default async function NewBookletPage() {
           </FormField>
 
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="السعر (ج.م)">
+            <FormField label="السعر (د.ع)">
               <input name="price" type="number" min={0} step="0.01" required className={inputClass} />
             </FormField>
             <FormField label="نسبة ربح مخصصة % (اختياري)">
@@ -89,8 +90,8 @@ export default async function NewBookletPage() {
             </FormField>
           </div>
 
-          <FormField label="رابط صورة الغلاف (اختياري)">
-            <input name="coverImageUrl" type="url" dir="ltr" className={inputClass} />
+          <FormField label="صورة الغلاف (اختياري)">
+            <ImageUploadField name="coverImageUrl" />
           </FormField>
 
           <FormField label="حالة العرض">

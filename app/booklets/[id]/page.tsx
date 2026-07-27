@@ -68,7 +68,7 @@ export default async function BookletDetailPage({ params }: { params: { id: stri
               <div className="mt-6 flex items-center justify-between border-t border-ink-50 pt-4">
                 <span className="text-sm text-mist">السعر</span>
                 <span className="font-display text-2xl font-bold text-ink">
-                  {formatPrice(booklet.price)} ج.م
+                  {formatPrice(booklet.price)} د.ع
                 </span>
               </div>
             </div>

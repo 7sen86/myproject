@@ -49,7 +49,7 @@ export default async function BookletsPage() {
                 <td className="px-5 py-3 text-mist">
                   {b.subject.name} · {b.stage.name}
                 </td>
-                <td className="px-5 py-3 text-charcoal">{formatPrice(b.price)} ج.م</td>
+                <td className="px-5 py-3 text-charcoal">{formatPrice(b.price)} د.ع</td>
                 <td className="px-5 py-3 text-charcoal">{b.salesCount}</td>
                 <td className="px-5 py-3">
                   <span

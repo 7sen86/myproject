@@ -129,19 +129,19 @@ export default async function ReportsPage({
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="إجمالي الإيرادات"
-          value={`${formatPrice(totalRevenue)} ج.م`}
+          value={`${formatPrice(totalRevenue)} د.ع`}
           icon={Wallet}
           accent="leaf"
         />
         <StatCard
           label="حصة المكتبة"
-          value={`${formatPrice(totalLibraryShare)} ج.م`}
+          value={`${formatPrice(totalLibraryShare)} د.ع`}
           icon={Package}
           accent="ink"
         />
         <StatCard
           label="حصص الأساتذة"
-          value={`${formatPrice(totalTeacherShare)} ج.م`}
+          value={`${formatPrice(totalTeacherShare)} د.ع`}
           icon={Users}
           accent="marker"
         />
@@ -178,11 +178,11 @@ export default async function ReportsPage({
               <tr key={row.name}>
                 <td className="px-5 py-3 font-medium text-charcoal">{row.name}</td>
                 <td className="px-5 py-3 text-charcoal">{row.soldCopies}</td>
-                <td className="px-5 py-3 text-charcoal">{formatPrice(row.revenue)} ج.م</td>
+                <td className="px-5 py-3 text-charcoal">{formatPrice(row.revenue)} د.ع</td>
                 <td className="px-5 py-3 font-medium text-leaf">
-                  {formatPrice(row.teacherShare)} ج.م
+                  {formatPrice(row.teacherShare)} د.ع
                 </td>
-                <td className="px-5 py-3 text-ink">{formatPrice(row.libraryShare)} ج.م</td>
+                <td className="px-5 py-3 text-ink">{formatPrice(row.libraryShare)} د.ع</td>
               </tr>
             ))}
           </tbody>

@@ -43,7 +43,7 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-card">
         <Link href="/" className="font-display text-2xl font-bold text-ink">
-          ملازم<span className="marker-underline">.</span>
+          مكتبة الصديقين
         </Link>
         <h1 className="mt-6 font-display text-xl font-bold text-charcoal">تسجيل الدخول</h1>
         <p className="mt-1 text-sm text-mist">لأصحاب حسابات الإدارة والأساتذة فقط</p>

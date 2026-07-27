@@ -75,9 +75,9 @@ export default async function OrdersPage({
                 </td>
                 <td className="px-5 py-3 text-charcoal">{order.booklet.title}</td>
                 <td className="px-5 py-3 text-mist">{order.teacher.fullName}</td>
-                <td className="px-5 py-3 text-charcoal">{formatPrice(order.priceAtOrder)} ج.م</td>
+                <td className="px-5 py-3 text-charcoal">{formatPrice(order.priceAtOrder)} د.ع</td>
                 <td className="px-5 py-3 text-mist">
-                  {new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(
+                  {new Intl.DateTimeFormat("ar-IQ", { dateStyle: "medium" }).format(
                     order.createdAt
                   )}
                 </td>

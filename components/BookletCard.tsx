@@ -37,7 +37,7 @@ export function BookletCard({ booklet }: { booklet: BookletWithRelations }) {
           <div className="mt-auto flex items-center justify-between pt-2">
             <span className="text-sm text-mist">{booklet.stage.name}</span>
             <span className="font-display text-base font-bold text-ink">
-              {formatPrice(booklet.price)} ج.م
+              {formatPrice(booklet.price)} د.ع
             </span>
           </div>
         </div>

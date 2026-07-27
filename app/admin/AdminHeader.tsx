@@ -13,7 +13,7 @@ export async function AdminHeader() {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-ink-50 bg-paper/90 px-6 py-3 backdrop-blur sm:px-10">
       <span className="text-xs text-mist">
-        {new Intl.DateTimeFormat("ar-EG", { dateStyle: "full" }).format(new Date())}
+        {new Intl.DateTimeFormat("ar-IQ", { dateStyle: "full" }).format(new Date())}
       </span>
       <NotificationBell
         notifications={notifications.map((n) => ({

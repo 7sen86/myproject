@@ -84,9 +84,9 @@ export function OrderForm({
           name="studentPhone"
           required
           type="tel"
-          pattern="^01[0-9]{9}$"
+          pattern="^07[0-9]{9}$"
           className="w-full rounded-xl border border-ink/10 px-3 py-2.5 text-sm outline-none focus:border-ink/40"
-          placeholder="01xxxxxxxxx"
+          placeholder="07xxxxxxxxx"
           dir="ltr"
         />
       </div>

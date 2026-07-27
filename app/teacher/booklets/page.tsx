@@ -69,11 +69,11 @@ export default async function TeacherBookletsPage() {
                 </td>
                 <td className="px-5 py-3 text-charcoal">{ordersCount}</td>
                 <td className="px-5 py-3 text-charcoal">{soldCopies}</td>
-                <td className="px-5 py-3 text-charcoal">{formatPrice(revenue)} ج.م</td>
-                <td className="px-5 py-3 font-medium text-leaf">{formatPrice(myProfit)} ج.م</td>
+                <td className="px-5 py-3 text-charcoal">{formatPrice(revenue)} د.ع</td>
+                <td className="px-5 py-3 font-medium text-leaf">{formatPrice(myProfit)} د.ع</td>
                 <td className="px-5 py-3 text-mist">
                   {lastOrderDate
-                    ? new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(lastOrderDate)
+                    ? new Intl.DateTimeFormat("ar-IQ", { dateStyle: "medium" }).format(lastOrderDate)
                     : "—"}
                 </td>
               </tr>

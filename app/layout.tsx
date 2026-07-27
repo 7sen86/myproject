@@ -20,7 +20,7 @@ const bodyFont = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title: "ملازم — مكتبة الملازم الدراسية",
+  title: "مكتبة الصديقين — ملازم دراسية",
   description: "تصفح ملازم أساتذتك واطلبها في دقيقة واحدة",
 };
 
